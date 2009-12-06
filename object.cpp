@@ -34,6 +34,11 @@ interval interval::intersect(interval b) {
 	return res;
 }
 
+polygon::polygon() {
+	hasPhysics = true;
+	hasGraphics = true;
+}
+
 interval polygon::project(vec2 axis) {
   axis = axis.normalize();
   double p;
@@ -57,7 +62,7 @@ vec2 polygon::collide(object* o) {
     //find normal
 	  vec2 side;
 	  if(i == verts.size()) {
-		side = verts[0] - verts[i-1];
+		  side = verts[0] - verts[i-1];
 	  } else {
 		side = verts[i] - verts[i-1];
 	  }
@@ -83,6 +88,10 @@ vec2 polygon::collide(object* o) {
   return result;
 }
 
+bool polygon::contains(int x, int y) {
+	return false;
+}
+
 void polygon::update() {
 	object::update();
 }
@@ -95,23 +104,31 @@ std::vector<vec2> polygon::vertices() {
 	return verts;
 }
 
-bool polygon::contains_point(int x, int y) {
+void polygon::draw(graphics *g) {
 	std::vector<vec2> verts = vertices();
-	vec2 p(x,y);
-	int dot, sign;
-	for (unsigned int i = 0; i < verts.size(); i++) {
-		dot = (verts[i] - p).normalize().dot((verts[i+1%verts.size()] - p).normalize());
-		if (dot <  
+	glPushMatrix();
+	glTranslated(position.x, position.y, 0);
+	glBegin(GL_LINE_LOOP);
+	for(unsigned int i = 0; i < verts.size(); i++) {
+		glVertex2d(verts[i].x, verts[i].y);
 	}
+	glEnd();
+	glPopMatrix();
 }
 
+std::vector<vec2> debug_layer::points;
+std::vector<std::pair<vec2.v
 
-//void box::update() {
-//  x = getCollisionList();
-//  for(x) {
-//    if(vector = collision) {
-//      react;
-//    }
-//  }
-//}
+debug_layer::debug_layer() {
+	hasPhysics = false;
+	hasGraphics = true;
+}
 
+void debug_layer::draw(graphics *g) {
+	for(int i = 0; i < points.size(); i++) {
+		g->draw(points[i]);
+	}
+	for(int i = 0; i < lines.size(); i++) {
+		g->draw(lines[i].first, lines[i].second);
+	}
+}

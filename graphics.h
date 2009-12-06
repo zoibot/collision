@@ -11,7 +11,8 @@ class graphics {
 public:
 	graphics();
 	~graphics();
-	void draw(object *o);
+	void draw(polygon *p);
+	void draw(debug_layer *d);
 	void draw(vec2 v);
 	void draw(vec2 v, vec2 v2);
 	void begin_update();

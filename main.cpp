@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 					for(int i = 0; i < temp->points.size(); i++) {
 						temp->points[i] = temp->points[i] - temp->position;
 					}
-					temp->acceleration = vec2(0, 0.2);
+					temp->acceleration = vec2(0, 0.5);
 					temp = NULL;
 				}
 			} else if(e.button.button == SDL_BUTTON_MIDDLE) {
@@ -56,9 +56,6 @@ int main(int argc, char *argv[]) {
 			}
 			break;
 		case SDL_KEYDOWN:
-			if(e.key.keysym.sym != SDLK_ESCAPE) {
-				break;
-			}
 		case SDL_QUIT:
 			done = true;
 			break;

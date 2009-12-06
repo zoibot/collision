@@ -5,11 +5,11 @@
 
 class object_manager {
 private:
-	static std::list<object*> objects;
+	static std::vector<object*> objects;
 public:
 	void add_object(object*);
 	void remove_object(object*);
-	void remove_object_at(int,int);
+	bool remove_object_at(int,int);
 	void update();
 	void draw(graphics*);
 };

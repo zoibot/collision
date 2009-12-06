@@ -1,36 +1,40 @@
 #include "object_manager.h"
 #include <iostream>
+#include <list>
 vec2 collisionpt(0,0);
 
-std::list<object*> object_manager::objects;
+std::vector<object*> object_manager::objects;
 
 void object_manager::add_object(object* o) {
 	objects.push_back(o);
 }
 
 void object_manager::remove_object(object* o) {
-	objects.(o);
+	//nahthing
 }
 
-void object_manager::remove_object_at(int x, int y) {
-	for (unsigned int i = 0; i < objects.size(); i++) {
-		if(objects[i]->contains_point(x,y)) {
+bool object_manager::remove_object_at(int x, int y) {
+	for(unsigned int i = 0; i < objects.size(); i++) {
+		if (objects[i]->contains(x,y)) {
 			remove_object(objects[i]);
-			break;
+			return true;
 		}
 	}
+	return false;
 }
 
 void object_manager::update() {
 	vec2 collidea, collideb;
+	std::list<vec2> collisionpts;
 	for(unsigned int i = 0; i < objects.size(); i++) {
 		objects[i]->update();
 	}
 	for(unsigned int i = 0; i < objects.size(); i++) {
+		if(!objects[i]->hasPhysics) continue;
 		//handle collisions
 		for(unsigned int j = i; j < objects.size(); j++) {
-			bool edgecollision = false;
-			if(i == j || objects[i]->vertices().empty() || objects[j]->vertices().empty()) continue;
+			if(!objects[j]->hasPhysics) continue;
+			if(i >= j || objects[i]->vertices().empty() || objects[j]->vertices().empty()) continue;
 			collidea = objects[i]->collide(objects[j]);
 			collideb = objects[j]->collide(objects[i]);
 			if(collidea.magsquared() > collideb.magsquared()) collidea = collideb;
@@ -76,7 +80,6 @@ void object_manager::update() {
 				} else {
 					//edge-edge collision
 					//have 4 points, need to discard outer two
-					edgecollision = true;
 					collisionpt.x = collisionpt.y = 0;
 					std::vector<vec2> pts;
 					pts.push_back(maxdota+objects[i]->position);
@@ -103,6 +106,7 @@ void object_manager::update() {
 					}
 					collisionpt = collisionpt.scale(0.5);
 				}
+				debug_layer::points.push_back(collisionpt);
 				vec2 rap, rbp, vab;
 				rap = (collisionpt - objects[i]->position).leftnorm().normalize();
 				rbp = (collisionpt - objects[j]->position).leftnorm().normalize();
@@ -120,19 +124,17 @@ void object_manager::update() {
 				//apply impulse to translational and rotational velocities
 				objects[i]->velocity = objects[i]->velocity + impulse.scale(1/objects[i]->mass);
 				objects[j]->velocity = objects[j]->velocity - impulse.scale(1/objects[j]->mass);
-				if(!edgecollision) {
-					objects[i]->angularvelocity = objects[i]->angularvelocity - rap.dot(impulse.scale(1/ia));
-					objects[j]->angularvelocity = objects[j]->angularvelocity + rbp.dot(impulse.scale(1/ib));
-				}
+				objects[i]->angularvelocity = objects[i]->angularvelocity - rap.dot(impulse.scale(1/ia));
+				objects[j]->angularvelocity = objects[j]->angularvelocity + rbp.dot(impulse.scale(1/ib));
 				//friction
-				double f = 0.2f;
+				double f = 0.0f;//0.2f;
 				//scale back the part of the velocity perpendicular to the normal to simulate friction
 				objects[i]->velocity = objects[i]->velocity - collidea.leftnorm().normalize().scale(f * objects[i]->velocity.dot(collidea.leftnorm().normalize()));
 				objects[j]->velocity = objects[j]->velocity - collidea.leftnorm().normalize().scale(f * objects[j]->velocity.dot(collidea.leftnorm().normalize()));
 				//if(objects[i]->velocity.magsquared() < 5) objects[i]->velocity = vec2(0,0);
 				//if(objects[j]->velocity.magsquared() < 5) objects[j]->velocity = vec2(0,0);
-				//if(abs(objects[i]->angularvelocity) < .03) objects[i]->angularvelocity = 0;
-				//if(abs(objects[j]->angularvelocity) < .03) objects[j]->angularvelocity = 0;
+				//if(abs(objects[i]->angularvelocity) < .3) objects[i]->angularvelocity = 0;
+				//if(abs(objects[j]->angularvelocity) < .3) objects[j]->angularvelocity = 0;
 			}
 		}
 	}
@@ -140,6 +142,6 @@ void object_manager::update() {
 
 void object_manager::draw(graphics *g) {
 	for(unsigned int i = 0; i < objects.size(); i++) {
-		g->draw(objects[i]);
+		objects[i]->draw(g);
 	}
 }
