@@ -13,13 +13,15 @@ graphics::~graphics() {
 }
 
 
-void graphics::draw(vec2 v) {
+void graphics::draw(vec2 v, float* color) {
+	glColor3fv(color);
 	glBegin(GL_POINTS);
 	glVertex2d(v.x, v.y);
 	glEnd();
 }
 
-void graphics::draw(vec2 v, vec2 v2) {
+void graphics::draw(vec2 v, vec2 v2, float* color) {
+	glColor3fv(color);
 	glBegin(GL_LINES);
 	glVertex2d(v.x, v.y);
 	glVertex2d(v2.x, v2.y);

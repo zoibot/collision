@@ -11,6 +11,8 @@ public:
 	void remove_object(object*);
 	bool remove_object_at(int,int);
 	void update();
+	void handle_collision(vec2,object*,object*);
+	void move_objects(vec2,object*,object*);
 	void draw(graphics*);
 };
 

@@ -27,6 +27,7 @@ struct object {
 	virtual void draw(graphics*) = 0;
 	virtual interval project(vec2) = 0;
 	bool hasPhysics, hasGraphics;
+	float color[3];
 };
 
 struct polygon : public object {
@@ -43,9 +44,13 @@ struct polygon : public object {
 struct debug_layer : public object {
 	debug_layer();
 	static std::vector<vec2> points;
-	static std::vector<std::pair<vec2,vec2>> lines;
+	static std::vector<std::pair<vec2,vec2> > lines;
 	void draw(graphics*);
 	void update();
+	vec2 collide(object*);
+	std::vector<vec2> vertices();
+	bool contains(int,int);
+	interval project(vec2);
 };
 
 

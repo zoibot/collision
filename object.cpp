@@ -37,6 +37,9 @@ interval interval::intersect(interval b) {
 polygon::polygon() {
 	hasPhysics = true;
 	hasGraphics = true;
+	color[0] = 1.0;
+	color[1] = 1.0;
+	color[2] = 1.0;
 }
 
 interval polygon::project(vec2 axis) {
@@ -85,6 +88,8 @@ vec2 polygon::collide(object* o) {
 			result = -temp;
 	}
   }
+  if (result.magsquared() > 1000) 
+	  std::cout << "wtf" << std::endl;
   return result;
 }
 
@@ -108,6 +113,7 @@ void polygon::draw(graphics *g) {
 	std::vector<vec2> verts = vertices();
 	glPushMatrix();
 	glTranslated(position.x, position.y, 0);
+	glColor3fv(color);
 	glBegin(GL_LINE_LOOP);
 	for(unsigned int i = 0; i < verts.size(); i++) {
 		glVertex2d(verts[i].x, verts[i].y);
@@ -117,7 +123,7 @@ void polygon::draw(graphics *g) {
 }
 
 std::vector<vec2> debug_layer::points;
-std::vector<std::pair<vec2.v
+std::vector<std::pair<vec2, vec2> > debug_layer::lines;
 
 debug_layer::debug_layer() {
 	hasPhysics = false;
@@ -125,10 +131,32 @@ debug_layer::debug_layer() {
 }
 
 void debug_layer::draw(graphics *g) {
+	std::cout << "drawing debug crap" << std::endl;
+	float red[3] = {1.0, 0.0, 0.0};
 	for(int i = 0; i < points.size(); i++) {
-		g->draw(points[i]);
+		g->draw(points[i], red);
 	}
 	for(int i = 0; i < lines.size(); i++) {
-		g->draw(lines[i].first, lines[i].second);
+		g->draw(lines[i].first, lines[i].second, red);
 	}
+	points.clear();
+	lines.clear();
+}
+
+std::vector<vec2> debug_layer::vertices() {
+	std::vector<vec2> res;
+	return res;
+}
+
+vec2 debug_layer::collide(object *o) {
+	std::cout << "WHAT DON'T GET HERE" << std::endl;
+	return vec2(0,0);
+}
+
+bool debug_layer::contains(int x, int y) {
+	return false;
+}
+
+interval debug_layer::project(vec2 a) {
+	return interval();
 }
