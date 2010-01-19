@@ -88,8 +88,6 @@ vec2 polygon::collide(object* o) {
 			result = -temp;
 	}
   }
-  if (result.magsquared() > 1000) 
-	  std::cout << "wtf" << std::endl;
   return result;
 }
 
@@ -131,7 +129,6 @@ debug_layer::debug_layer() {
 }
 
 void debug_layer::draw(graphics *g) {
-	std::cout << "drawing debug crap" << std::endl;
 	float red[3] = {1.0, 0.0, 0.0};
 	for(int i = 0; i < points.size(); i++) {
 		g->draw(points[i], red);
