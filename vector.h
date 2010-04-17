@@ -19,7 +19,7 @@ struct vec2 {
   double magsquared();
   vec2 rightnorm();
   vec2 leftnorm();
-  vec2 rotate(int);
+  vec2 rotate(double);
   double dot(vec2);
   vec2 operator+(vec2);
   vec2 operator-(vec2);

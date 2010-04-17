@@ -31,8 +31,8 @@ vec2 vec2::leftnorm() {
   return temp;
 }
 
-vec2 vec2::rotate(int degrees) {
-	double radians = degrees * (M_PI/180.0f);
+vec2 vec2::rotate(double radians) {
+	//double radians = degrees * (M_PI/180.0f);
 	vec2 temp(x*cos(radians) - y*sin(radians), x*sin(radians) + y*cos(radians));
 	return temp;
 }
