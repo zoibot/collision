@@ -149,7 +149,6 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		}
 		debug_layer::points.push_back(min1);
 		debug_layer::points.push_back(min2);
-		//debug_layer::lines.push_back(std::pair<vec2,vec2>(collisionpt - collidea.scale(10), collisionpt + collidea.scale(10)));
 		vec2 rap1, rbp1;
 		rap1 = (min1 - a->position).leftnorm();
 		rbp1 = (min1 - b->position).leftnorm();
@@ -164,7 +163,7 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		vec2 impulse1, impulse2;
 		//coefficient of restitution
 		double e = 0.0f;
-		//a more realistic model would calculate the rotational intertia, I just use the mass
+		//a more realistic model would calculate the rotational intertia, I just use a quantity proportional to the mass
 		double ia, ib;
 		ia = a->mass * 1000;
 		ib = b->mass * 1000;
@@ -175,13 +174,15 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		impulse2 = collidea.scale(vab2.scale(-(1 + e)).dot(collidea)/(collidea.magsquared()*(1/a->mass+1/b->mass)
 					+(rap2.dot(collidea)*rap2.dot(collidea))/ia+(rbp2.dot(collidea)*rbp2.dot(collidea))/ib));
 		//debug_layer::lines.push_back(std::pair<vec2,vec2>(collisionpt - impulse.scale(10), collisionpt + impulse.scale(10)));
+		debug_layer::lines.push_back(std::pair<vec2,vec2>(min1 - impulse1.scale(10), min1 + impulse1.scale(10)));
+		debug_layer::lines.push_back(std::pair<vec2,vec2>(min2 - impulse2.scale(10), min2 + impulse2.scale(10)));
 		//apply impulse to translational and rotational velocities
 		a->velocity = a->velocity + (impulse1 + impulse2).scale(1/(2*a->mass));
 		b->velocity = b->velocity - (impulse1 + impulse2).scale(1/(2*b->mass));
 		//this is backward sometimes?
 		//need to weight based on stuff
-		a->angularvelocity = a->angularvelocity - (rap2.magnitude() * rap1.dot(impulse1.scale(1/ia)) + rap1.magnitude() * rap2.dot(impulse2.scale(1/ia)))/(rap1.magnitude()+rap2.magnitude());
-		b->angularvelocity = b->angularvelocity + (rbp2.magsquared() * rbp1.dot(impulse1.scale(1/ib)) + rbp1.magsquared() * rbp2.dot(impulse2.scale(1/ib)))/(rbp1.magsquared()+rbp2.magsquared());
+		//a->angularvelocity = a->angularvelocity - (rap2.magnitude() * rap1.dot(impulse1.scale(1/ia)) + rap1.magnitude() * rap2.dot(impulse2.scale(1/ia)))/(rap1.magnitude()+rap2.magnitude());
+		//b->angularvelocity = b->angularvelocity + (rbp2.magsquared() * rbp1.dot(impulse1.scale(1/ib)) + rbp1.magsquared() * rbp2.dot(impulse2.scale(1/ib)))/(rbp1.magsquared()+rbp2.magsquared());
 		//friction
 		double f = 0.2f;
 		//scale back the part of the velocity perpendicular to the normal to simulate friction
