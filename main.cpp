@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		}
+		SDL_Delay(10);
 	}
 	//exit
 	return 0;

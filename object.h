@@ -2,6 +2,7 @@
 #define OBJECT_H_
 
 #include <vector>
+#include <list>
 #include "vector.h"
 
 class graphics;
@@ -22,6 +23,7 @@ struct object {
 	vec2 position, velocity, acceleration;
 	virtual std::vector<vec2> vertices() = 0;
 	virtual vec2 collide(object*) = 0;
+	virtual std::vector<vec2> closestpt(vec2 penetration) = 0;
 	virtual bool contains(int,int) = 0;
 	void update();
 	virtual void draw(graphics*) = 0;
@@ -35,6 +37,7 @@ struct polygon : public object {
 	std::vector<vec2> points;
 	interval project(vec2);
 	vec2 collide(object*);
+	std::vector<vec2> closestpt(vec2 penetration);
 	bool contains(int,int);
 	void update();
 	void draw(graphics*);
@@ -48,6 +51,7 @@ struct debug_layer : public object {
 	void draw(graphics*);
 	void update();
 	vec2 collide(object*);
+	std::vector<vec2> closestpt(vec2 penetration);
 	std::vector<vec2> vertices();
 	bool contains(int,int);
 	interval project(vec2);
