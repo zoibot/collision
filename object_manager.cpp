@@ -158,10 +158,6 @@ void object_manager::update() {
 	std::list<vec2> collisionpts;
 
 	std::map<std::pair<object*,object*>,vec2> collisions;
-	
-	for(unsigned int i = 0; i < objects.size(); i++) {
-		objects[i]->update();
-	}
 	for(unsigned int i = 0; i < objects.size(); i++) {
 		if(!objects[i]->hasPhysics) continue;
 		//handle collisions
@@ -190,6 +186,9 @@ void object_manager::update() {
 		cur != collisions.end();
 		cur++) {
 			handle_collision((*cur).second, (*cur).first.first, (*cur).first.second);
+	}
+	for(unsigned int i = 0; i < objects.size(); i++) {
+		objects[i]->update();
 	}
 }
 
