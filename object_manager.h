@@ -13,6 +13,7 @@ public:
 	void update();
 	void handle_collision(vec2,object*,object*);
 	void move_objects(vec2,object*,object*);
+	double energy();
 	void draw(graphics*);
 };
 

@@ -25,6 +25,7 @@ struct object {
 	virtual vec2 collide(object*) = 0;
 	virtual std::vector<vec2> closestpt(vec2 penetration) = 0;
 	virtual bool contains(int,int) = 0;
+	double energy();
 	void update();
 	virtual void draw(graphics*) = 0;
 	virtual interval project(vec2) = 0;

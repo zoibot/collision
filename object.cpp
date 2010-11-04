@@ -19,6 +19,12 @@ void object::update() {
 	angle = angle + angularvelocity;
 }
 
+double object::energy() {
+	double K = 0.5 * mass * velocity.magsquared() + mass * 10000 * angularvelocity * angularvelocity;
+	double U = mass * acceleration.magnitude() * (-position.y); //the only acceleration is gravity
+	return K + U;
+}
+
 interval interval::intersect(interval b) {
 	interval res;
 	if(min > b.min) {

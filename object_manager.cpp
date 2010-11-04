@@ -40,14 +40,52 @@ void object_manager::move_objects(vec2 collidea, object *a, object *b) {
 }
 
 void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
+	double initial_energy = energy();
+	//this entire function is a fail
+	//fix all vertices calls
+	//something is wrong here
+	//find closest points to collision on both sides (1 or 2 points from each object)
+	//this should absolutely be methods of the object, since it will be totally different for circle etc
+	int asize = 0;
+	vec2 top2a[2];
+	bool twoa = false;
+	double anglea;
+	for(unsigned int k = 0; k < a->vertices().size(); k++) {
+		if(asize == 0 || top2a[0].dot(collidea) < a->vertices()[k].dot(collidea)) {
+			top2a[1] = top2a[0];
+			top2a[0] = a->vertices()[k];
+			if(asize == 0) asize = 1;
+		} else if (asize == 1 || top2a[1].dot(collidea) < a->vertices()[k].dot(collidea)) {
+			top2a[1] = a->vertices()[k];
+			if(asize == 1) asize = 2;
+		}
+	}
+	debug_layer::lines.push_back(std::make_pair(top2a[0], top2a[1]));
+	vec2 edge = top2a[0] - top2a[1];
+	anglea = acos(edge.dot(collidea)/(collidea.magnitude() * edge.magnitude()));
+	if((anglea - M_PI/2) < 0.05) {
+		twoa = true;
+	}
+	int bsize = 0;
+	vec2 top2b[2];
+	bool twob = false;
+	double angleb;
+	for(unsigned int k = 0; k < b->vertices().size(); k++) {
+		if(asize == 0 || top2b[0].dot(collidea) > b->vertices()[k].dot(collidea)) {
+			top2b[1] = top2b[0];
+			top2b[0] = b->vertices()[k];
+			if(bsize == 0) bsize = 1;
+		} else if (bsize == 1 || top2b[1].dot(collidea) > b->vertices()[k].dot(collidea)) {
+			top2b[1] = b->vertices()[k];
+			if(bsize == 1) bsize = 2;
+		}
+	}
+	edge = top2b[0] - top2b[1];
+	angleb = acos(edge.dot(collidea)/(collidea.magnitude() * edge.magnitude()));
+	if((angleb - M_PI/2) < 0.05) {
+		twob = true;
+	}
 	//use points from objects to find the real collision point or points
-	std::vector<vec2> top2a, top2b;
-	bool twoa, twob;
-	top2a = a->closestpt(collidea);
-	top2b = b->closestpt(-collidea);
-	twoa = top2a.size() > 1;
-	twob = top2b.size() > 1;
-
 	if(!twoa || !twob) {
 		if(!twoa) {
 			//if there is only one collision point on obj a (vertex-edge collision)
@@ -68,9 +106,10 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		double e = 0.0f;
 		//a more realistic model would calculate the rotational intertia, I just use the mass
 		double ia, ib;
-		ia = a->mass * 100000;
-		ib = b->mass * 100000;
+		ia = a->mass * 1000;
+		ib = b->mass * 1000;
 		//calculate magnitude and direction of impulse
+		//WHAT THIS DOES NOT COUNTERACT ACCELERATION FAIL FAIL FAIL
 		impulse = collidea.scale(vab.scale(-(1 + e)).dot(collidea)/(collidea.magsquared()*(1/a->mass+1/b->mass)
 					+(rap.dot(collidea)*rap.dot(collidea))/ia+(rbp.dot(collidea)*rbp.dot(collidea))/ib));
 		debug_layer::lines.push_back(std::pair<vec2,vec2>(collisionpt - impulse.scale(10), collisionpt + impulse.scale(10)));
@@ -151,6 +190,10 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		//a->velocity = a->velocity - collidea.leftnorm().normalize().scale(f * a->velocity.dot(collidea.leftnorm().normalize()));
 		//b->velocity = b->velocity - collidea.leftnorm().normalize().scale(f * b->velocity.dot(collidea.leftnorm().normalize()));
 	}
+	double energy2 = energy();
+			if(energy2-initial_energy > 1000) {
+			std::cout << "wtf" <<std::endl;
+		}
 }
 
 void object_manager::update() {
@@ -158,6 +201,10 @@ void object_manager::update() {
 	std::list<vec2> collisionpts;
 
 	std::map<std::pair<object*,object*>,vec2> collisions;
+	
+	for(unsigned int i = 0; i < objects.size(); i++) {
+		objects[i]->update();
+	}
 	for(unsigned int i = 0; i < objects.size(); i++) {
 		if(!objects[i]->hasPhysics) continue;
 		//handle collisions
@@ -181,15 +228,23 @@ void object_manager::update() {
 				move_objects((*cur).second, (*cur).first.first, (*cur).first.second);
 		}
 	}
+	double energy1 = energy();
 	//Actually handle collisions based on the vectors we found
 	for(std::map<std::pair<object*,object*>,vec2>::iterator cur = collisions.begin();
 		cur != collisions.end();
 		cur++) {
 			handle_collision((*cur).second, (*cur).first.first, (*cur).first.second);
 	}
+	double energy2 = energy();
+	std::cout << energy1 << ", " << energy2 << std::endl;
+}
+
+double object_manager::energy() {
+	double result = 0;
 	for(unsigned int i = 0; i < objects.size(); i++) {
-		objects[i]->update();
+		result += objects[i]->energy();
 	}
+	return result;
 }
 
 void object_manager::draw(graphics *g) {
