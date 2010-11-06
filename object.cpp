@@ -145,6 +145,7 @@ std::vector<vec2> polygon::vertices() {
 }
 
 void polygon::draw(graphics *g) {
+	//should use g???
 	std::vector<vec2> verts = vertices();
 	glPushMatrix();
 	glTranslated(position.x, position.y, 0);

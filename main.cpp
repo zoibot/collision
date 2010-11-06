@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
 	debug_layer d;
 	polygon *temp = NULL;
 	sf::Event e;
+	sf::Clock clock;
 
 	polygon floor;
 	floor.position = vec2(320,480);
@@ -21,6 +22,7 @@ int main(int argc, char *argv[]) {
 	floor.mass = 1000000000;
 
 	while(!done) {
+		clock.Reset();
 		om.update();
 		g.begin_update();
 		om.draw(&g);
@@ -36,7 +38,7 @@ int main(int argc, char *argv[]) {
 						temp->hasPhysics = false;
 					}
 					std::cout << "adding point " << e.MouseMove.X << " " << e.MouseMove.Y << std::endl;
-					temp->points.push_back(vec2(e.MouseMove.X, e.MouseMove.Y));
+					temp->points.push_back(vec2(g.wind.GetInput().GetMouseX(), g.wind.GetInput().GetMouseY()));
 				} else if(e.MouseButton.Button == sf::Mouse::Right) {
 					if(temp != NULL) {
 						std::cout << "finishing poly" << std::endl;
@@ -65,6 +67,7 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		}
+		while(clock.GetElapsedTime() < 1.0/60);
 	}
 	//exit
 	return 0;
