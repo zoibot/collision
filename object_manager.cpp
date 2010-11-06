@@ -41,9 +41,9 @@ void object_manager::move_objects(vec2 collidea, object *a, object *b) {
 
 void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 	double initial_energy = energy();
-	//this entire function is a fail
-	//fix all vertices calls
-	//something is wrong here
+	//TODO this entire function is a fail
+	//TODO fix all vertices calls
+
 	//find closest points to collision on both sides (1 or 2 points from each object)
 	//this should absolutely be methods of the object, since it will be totally different for circle etc
 	int asize = 0;
@@ -103,20 +103,23 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		collidea = collidea.normalize();
 		vec2 impulse;
 		//coefficient of restitution
-		double e = 0.0f;
-		//a more realistic model would calculate the rotational intertia, I just use the mass
+		double e = 0.5f;
+		//a more realistic model would calculate the rotational intertia, I just use the mass for now
 		double ia, ib;
 		ia = a->mass * 1000;
 		ib = b->mass * 1000;
 		//calculate magnitude and direction of impulse
-		//WHAT THIS DOES NOT COUNTERACT ACCELERATION FAIL FAIL FAIL
-		impulse = collidea.scale(vab.scale(-(1 + e)).dot(collidea)/(collidea.magsquared()*(1/a->mass+1/b->mass)
-					+(rap.dot(collidea)*rap.dot(collidea))/ia+(rbp.dot(collidea)*rbp.dot(collidea))/ib));
+		//this adds energy somehow?
+		double impulse_scale = vab.scale(-(1 + e)).dot(collidea);
+		double impulse_scale_denom = (collidea.magsquared()*(1/a->mass+1/b->mass)
+					+(rap.dot(collidea)*rap.dot(collidea))/ia+(rbp.dot(collidea)*rbp.dot(collidea))/ib);
+		impulse_scale /= impulse_scale_denom;
+		impulse = collidea.scale(impulse_scale);
+		impulse.magnitude();
 		debug_layer::lines.push_back(std::pair<vec2,vec2>(collisionpt - impulse.scale(10), collisionpt + impulse.scale(10)));
 		//apply impulse to translational and rotational velocities
 		a->velocity = a->velocity + impulse.scale(1/a->mass);
 		b->velocity = b->velocity - impulse.scale(1/b->mass);
-		//this is backward sometimes?
 		a->angularvelocity = a->angularvelocity - rap.dot(impulse.scale(1/ia));
 		b->angularvelocity = b->angularvelocity + rbp.dot(impulse.scale(1/ib));
 		//friction
@@ -124,7 +127,6 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		//scale back the part of the velocity perpendicular to the normal to simulate friction
 		//a->velocity = a->velocity - collidea.leftnorm().normalize().scale(f * a->velocity.dot(collidea.leftnorm().normalize()));
 		//b->velocity = b->velocity - collidea.leftnorm().normalize().scale(f * b->velocity.dot(collidea.leftnorm().normalize()));
-
 	} else {
 		//edge-edge collision
 		//have 4 points, need to discard outer two
@@ -169,7 +171,6 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		ia = a->mass * 1000;
 		ib = b->mass * 1000;
 		//calculate magnitude and direction of impulse
-		//WHAT THIS DOES NOT COUNTERACT ACCELERATION FAIL FAIL FAIL
 		impulse1 = collidea.scale(vab1.scale(-(1 + e)).dot(collidea)/(collidea.magsquared()*(1/a->mass+1/b->mass)
 					+(rap1.dot(collidea)*rap1.dot(collidea))/ia+(rbp1.dot(collidea)*rbp1.dot(collidea))/ib));
 		impulse2 = collidea.scale(vab2.scale(-(1 + e)).dot(collidea)/(collidea.magsquared()*(1/a->mass+1/b->mass)
@@ -191,7 +192,8 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		//b->velocity = b->velocity - collidea.leftnorm().normalize().scale(f * b->velocity.dot(collidea.leftnorm().normalize()));
 	}
 	double energy2 = energy();
-			if(energy2-initial_energy > 1000) {
+			if(energy2-initial_energy > 200) {
+				energy();
 			std::cout << "wtf" <<std::endl;
 		}
 }
@@ -214,7 +216,13 @@ void object_manager::update() {
 			if(!objects[j]->hasPhysics) continue;
 			if(objects[i]->vertices().empty() || objects[j]->vertices().empty()) continue;
 			collidea = objects[i]->collide(objects[j]);
+			if(collidea.magsquared() > 10000000) {
+				objects[i]->collide(objects[j]);
+			}
 			collideb = objects[j]->collide(objects[i]);
+			if(collideb.magsquared() > 10000000) {
+				objects[j]->collide(objects[i]);
+			}
 			if(collidea.magsquared() > collideb.magsquared()) collidea = -collideb;
 			if(collidea.x != 0 || collidea.y != 0) { //if there is a collision
 				collisions[std::pair<object*,object*>(objects[i], objects[j])] = collidea;

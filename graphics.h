@@ -1,6 +1,6 @@
 #ifndef GRAPHICS_H_
 #define GRAPHICS_H_
-#include <SDL/SDL.h>
+#include <SFML/Graphics.hpp>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -15,8 +15,8 @@ public:
 	void draw(vec2 v, vec2 v2, float*);
 	void begin_update();
 	void end_update();
-private:
-	SDL_Surface *screen;
+//private:
+	sf::RenderWindow wind;
 };
 
 #endif

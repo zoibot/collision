@@ -67,34 +67,34 @@ vec2 polygon::collide(object* o) {
 	vec2 result(100000,10000000);
 	vec2 temp;
 	std::vector<vec2> verts = vertices();
-  for(unsigned int i = 1; i < verts.size()+1; i++) {
-	//find normal
-	  vec2 side;
-	  if(i == verts.size()) {
-		  side = verts[0] - verts[i-1];
-	  } else {
-		side = verts[i] - verts[i-1];
-	  }
-	vec2 norm = side.rightnorm().normalize();
-	a = project(norm);
-	b = o->project(norm);
-	intersect = a.intersect(b);
-	if(intersect.max < intersect.min) {
-		//found separating axis, no collision
-		result.x = 0;
-		result.y = 0;
-		break;
-	} else {
-		if(intersect.max < 0) {
-			temp = norm.scale(intersect.min) - norm.scale(intersect.max);
+	for(unsigned int i = 1; i < verts.size()+1; i++) {
+		//find normal
+		vec2 side;
+		if(i == verts.size()) {
+			side = verts[0] - verts[i-1];
 		} else {
-			temp = norm.scale(intersect.max) - norm.scale(intersect.min);
+			side = verts[i] - verts[i-1];
 		}
-		if (temp.magsquared() < result.magsquared())
-			result = -temp;
+		vec2 norm = side.rightnorm().normalize();
+		a = project(norm);
+		b = o->project(norm);
+		intersect = a.intersect(b);
+		if(intersect.max < intersect.min) {
+			//found separating axis, no collision
+			result.x = 0;
+			result.y = 0;
+			break;
+		} else {
+			if(intersect.max < 0) {
+				temp = norm.scale(intersect.min) - norm.scale(intersect.max);
+			} else {
+				temp = norm.scale(intersect.max) - norm.scale(intersect.min);
+			}
+			if (temp.magsquared() < result.magsquared())
+				result = -temp;
+		}
 	}
-  }
-  return result;
+	return result;
 }
 
 std::vector<vec2> polygon::closestpt(vec2 collide) {

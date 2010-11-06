@@ -9,8 +9,8 @@ int main(int argc, char *argv[]) {
 	graphics g;
 	object_manager om;
 	debug_layer d;
-	SDL_Event e;
 	polygon *temp = NULL;
+	sf::Event e;
 
 	polygon floor;
 	floor.position = vec2(320,480);
@@ -26,18 +26,18 @@ int main(int argc, char *argv[]) {
 		om.draw(&g);
 		glColor3d(1.0,1.0,1.0);
 		g.end_update();
-		while(SDL_PollEvent(&e)) {
-			switch(e.type) {
-			case SDL_MOUSEBUTTONUP:
-				if(e.button.button == SDL_BUTTON_LEFT) {
+		while(g.wind.GetEvent(e)) {
+			switch(e.Type) {
+			case sf::Event::MouseButtonReleased:
+				if(e.MouseButton.Button == sf::Mouse::Left) {
 					if(temp == NULL) {
 						std::cout << "adding polygon" << std::endl;
 						temp = new polygon();
 						temp->hasPhysics = false;
 					}
-					std::cout << "adding point " << e.motion.x << " " << e.motion.y << std::endl;
-					temp->points.push_back(vec2(e.motion.x, e.motion.y));
-				} else if(e.button.button == SDL_BUTTON_RIGHT) {
+					std::cout << "adding point " << e.MouseMove.X << " " << e.MouseMove.Y << std::endl;
+					temp->points.push_back(vec2(e.MouseMove.X, e.MouseMove.Y));
+				} else if(e.MouseButton.Button == sf::Mouse::Right) {
 					if(temp != NULL) {
 						std::cout << "finishing poly" << std::endl;
 						for(unsigned int i = 0; i < temp->points.size(); i++) {
@@ -50,22 +50,21 @@ int main(int argc, char *argv[]) {
 						temp->acceleration = vec2(0, 0.5);
 						temp = NULL;
 					}
-				} else if(e.button.button == SDL_BUTTON_MIDDLE) {
-					om.remove_object_at(e.motion.x, e.motion.y);
+				} else if(e.MouseButton.Button == sf::Mouse::Middle) {
+					om.remove_object_at(e.MouseMove.X, e.MouseMove.Y);
 				}
 				break;
-			case SDL_KEYDOWN:
-				switch(e.key.keysym.sym) {
-				case SDLK_SPACE:
+			case sf::Event::KeyPressed:
+				switch(e.Key.Code) {
+				case sf::Key::Space:
 					break;
 				}
 				break;
-			case SDL_QUIT:
+			case sf::Event::Closed:
 				done = true;
 				break;
 			}
 		}
-		SDL_Delay(10);
 	}
 	//exit
 	return 0;

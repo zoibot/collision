@@ -1,15 +1,14 @@
 #include "graphics.h"
 
-graphics::graphics() {
-	SDL_Init(SDL_INIT_VIDEO);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	screen = SDL_SetVideoMode(640,480,32,SDL_OPENGL);
+graphics::graphics() : wind(sf::RenderWindow(sf::VideoMode(640,480), "collide!!!")) {
+	//SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	//screen = SDL_SetVideoMode(640,480,32,SDL_OPENGL);
 	glPointSize(5.0);
+	glViewport(0,0,640,480);
 }
 
 graphics::~graphics() {
-	SDL_FreeSurface(screen);
-	SDL_Quit();
+	//SDL_Quit();
 }
 
 
@@ -30,11 +29,12 @@ void graphics::draw(vec2 v, vec2 v2, float* color) {
 
 void graphics::begin_update() {
 	glClear(GL_COLOR_BUFFER_BIT);
+	wind.SetActive();
 	glLoadIdentity();
 	glOrtho(0, 640, 480, 0, -1, 1);
 }
 
 void graphics::end_update() {
 	glFlush();
-	SDL_GL_SwapBuffers();
+	wind.Display();
 }
