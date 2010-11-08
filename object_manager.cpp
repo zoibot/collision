@@ -60,7 +60,7 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 			if(asize == 1) asize = 2;
 		}
 	}
-	debug_layer::lines.push_back(std::make_pair(top2a[0], top2a[1]));
+	debug_layer::lines.push_back(colored_line(top2a[0], top2a[1], color(1,0,0)));
 	vec2 edge = top2a[0] - top2a[1];
 	anglea = acos(edge.dot(collidea)/(collidea.magnitude() * edge.magnitude()));
 	if((anglea - M_PI/2) < 0.05) {
@@ -94,11 +94,15 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 			//or obj b
 			collisionpt = top2b[0] + b->position;
 		}
-		debug_layer::points.push_back(collisionpt);
+		debug_layer::points.push_back(colored_point(collisionpt, color(1,0,0)));
 		//debug_layer::lines.push_back(std::pair<vec2,vec2>(collisionpt - collidea.scale(10), collisionpt + collidea.scale(10)));
 		vec2 rap, rbp, vab;
 		rap = (collisionpt - a->position).leftnorm();
 		rbp = (collisionpt - b->position).leftnorm();
+		debug_layer::lines.push_back(colored_line(collisionpt, collisionpt + rap, color(0,1,1)));
+		debug_layer::lines.push_back(colored_line(collisionpt, collisionpt + rbp, color(1,0,1)));
+		debug_layer::lines.push_back(colored_line(a->position, collisionpt, color(0,1,1)));
+		debug_layer::lines.push_back(colored_line(b->position, collisionpt, color(1,0,1)));
 		vab = a->velocity + rap.scale(a->angularvelocity) - b->velocity - rbp.scale(b->angularvelocity);
 		collidea = collidea.normalize();
 		vec2 impulse;
@@ -116,12 +120,12 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		impulse_scale /= impulse_scale_denom;
 		impulse = collidea.scale(impulse_scale);
 		impulse.magnitude();
-		debug_layer::lines.push_back(std::pair<vec2,vec2>(collisionpt - impulse.scale(10), collisionpt + impulse.scale(10)));
+		debug_layer::lines.push_back(colored_line(collisionpt - impulse.scale(10), collisionpt + impulse.scale(10), color(1,0,0)));
 		//apply impulse to translational and rotational velocities
 		a->velocity = a->velocity + impulse.scale(1/a->mass);
 		b->velocity = b->velocity - impulse.scale(1/b->mass);
-		a->angularvelocity = a->angularvelocity - rap.dot(impulse.scale(1/ia));
-		b->angularvelocity = b->angularvelocity + rbp.dot(impulse.scale(1/ib));
+		a->angularvelocity = a->angularvelocity - rap.dot(impulse.scale(1.0/ia));
+		b->angularvelocity = b->angularvelocity + rbp.dot(impulse.scale(1.0/ib));
 		//friction
 		double f = 0.2f;
 		//scale back the part of the velocity perpendicular to the normal to simulate friction
@@ -150,8 +154,8 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 				}
 			}
 		}
-		debug_layer::points.push_back(min1);
-		debug_layer::points.push_back(min2);
+		debug_layer::points.push_back(colored_point(min1, color(1,0,0)));
+		debug_layer::points.push_back(colored_point(min1, color(1,0,0)));
 		vec2 rap1, rbp1;
 		rap1 = (min1 - a->position).leftnorm();
 		rbp1 = (min1 - b->position).leftnorm();
@@ -176,8 +180,8 @@ void object_manager::handle_collision(vec2 collidea, object *a, object *b) {
 		impulse2 = collidea.scale(vab2.scale(-(1 + e)).dot(collidea)/(collidea.magsquared()*(1/a->mass+1/b->mass)
 					+(rap2.dot(collidea)*rap2.dot(collidea))/ia+(rbp2.dot(collidea)*rbp2.dot(collidea))/ib));
 		//debug_layer::lines.push_back(std::pair<vec2,vec2>(collisionpt - impulse.scale(10), collisionpt + impulse.scale(10)));
-		debug_layer::lines.push_back(std::pair<vec2,vec2>(min1 - impulse1.scale(10), min1 + impulse1.scale(10)));
-		debug_layer::lines.push_back(std::pair<vec2,vec2>(min2 - impulse2.scale(10), min2 + impulse2.scale(10)));
+		debug_layer::lines.push_back(colored_line(min1 - impulse1.scale(10), min1 + impulse1.scale(10), color(1,0,0)));
+		debug_layer::lines.push_back(colored_line(min2 - impulse2.scale(10), min2 + impulse2.scale(10), color(1,0,0)));
 		//apply impulse to translational and rotational velocities
 		a->velocity = a->velocity + (impulse1 + impulse2).scale(1/(2*a->mass));
 		b->velocity = b->velocity - (impulse1 + impulse2).scale(1/(2*b->mass));

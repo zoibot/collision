@@ -20,7 +20,7 @@ void object::update() {
 }
 
 double object::energy() {
-	double K = 0.5 * mass * velocity.magsquared() + mass * 10000 * angularvelocity * angularvelocity;
+	double K = 0.5 * mass * velocity.magsquared() + mass * 1000 * angularvelocity * angularvelocity;
 	double U = mass * acceleration.magnitude() * (-position.y); //the only acceleration is gravity
 	return K + U;
 }
@@ -158,8 +158,8 @@ void polygon::draw(graphics *g) {
 	glPopMatrix();
 }
 
-std::vector<vec2> debug_layer::points;
-std::vector<std::pair<vec2, vec2> > debug_layer::lines;
+std::vector<colored_point> debug_layer::points;
+std::vector<colored_line> debug_layer::lines;
 
 debug_layer::debug_layer() {
 	hasPhysics = false;
@@ -167,12 +167,11 @@ debug_layer::debug_layer() {
 }
 
 void debug_layer::draw(graphics *g) {
-	float red[3] = {1.0, 0.0, 0.0};
 	for(int i = 0; i < points.size(); i++) {
-		g->draw(points[i], red);
+		g->draw(points[i].point, points[i].color);
 	}
 	for(int i = 0; i < lines.size(); i++) {
-		g->draw(lines[i].first, lines[i].second, red);
+		g->draw(lines[i].start.point, lines[i].start.color, lines[i].end.point, lines[i].end.color);
 	}
 	points.clear();
 	lines.clear();

@@ -3,6 +3,7 @@
 #include "object_manager.h"
 #include "object.h"
 #include <iostream>
+#include <sstream>
 
 int main(int argc, char *argv[]) {
 	bool done = false;
@@ -21,13 +22,20 @@ int main(int argc, char *argv[]) {
 	floor.points.push_back(vec2(-320,-10));
 	floor.mass = 1000000000;
 
+	text_display energy("energy: ",0,0);
+	
+	bool paused = false;
+	bool step = false;
 	while(!done) {
 		clock.Reset();
-		om.update();
-		g.begin_update();
-		om.draw(&g);
-		glColor3d(1.0,1.0,1.0);
-		g.end_update();
+		if(!paused || step) {
+			step = false;
+			om.update();
+			g.begin_update();
+			om.draw(&g);
+			glColor3d(1.0,1.0,1.0);
+			g.end_update();
+		}
 		while(g.wind.GetEvent(e)) {
 			switch(e.Type) {
 			case sf::Event::MouseButtonReleased:
@@ -59,6 +67,15 @@ int main(int argc, char *argv[]) {
 			case sf::Event::KeyPressed:
 				switch(e.Key.Code) {
 				case sf::Key::Space:
+					if(!paused) {
+						paused = true;
+						break;
+					} else {
+						step = true;
+					}
+					break;
+				case sf::Key::U:
+					paused = false;
 					break;
 				}
 				break;
@@ -67,6 +84,9 @@ int main(int argc, char *argv[]) {
 				break;
 			}
 		}
+		std::stringstream ss;
+		ss << "energy: " << om.energy();
+		energy.change_text(ss.str());
 		while(clock.GetElapsedTime() < 1.0/60);
 	}
 	//exit

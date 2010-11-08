@@ -12,11 +12,13 @@ public:
 	graphics();
 	~graphics();
 	void draw(vec2 v, float*);
-	void draw(vec2 v, vec2 v2, float*);
+	void draw(vec2 v, float*, vec2 v2, float*);
 	void begin_update();
 	void end_update();
 //private:
 	sf::RenderWindow wind;
 };
+
+float *color(float r, float g, float b);
 
 #endif

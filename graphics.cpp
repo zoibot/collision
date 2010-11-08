@@ -5,6 +5,7 @@ graphics::graphics() : wind(sf::RenderWindow(sf::VideoMode(640,480), "collide!!!
 	//screen = SDL_SetVideoMode(640,480,32,SDL_OPENGL);
 	glPointSize(5.0);
 	glViewport(0,0,640,480);
+	wind.PreserveOpenGLStates(true);
 }
 
 graphics::~graphics() {
@@ -19,10 +20,11 @@ void graphics::draw(vec2 v, float* color) {
 	glEnd();
 }
 
-void graphics::draw(vec2 v, vec2 v2, float* color) {
-	glColor3fv(color);
+void graphics::draw(vec2 v, float* color1, vec2 v2, float* color2) {
 	glBegin(GL_LINES);
+	glColor3fv(color1);
 	glVertex2d(v.x, v.y);
+	glColor3fv(color2);
 	glVertex2d(v2.x, v2.y);
 	glEnd();
 }
@@ -37,4 +39,11 @@ void graphics::begin_update() {
 void graphics::end_update() {
 	glFlush();
 	wind.Display();
+}
+
+
+float *color(float r, float g, float b) {
+	float *temp = new float[3];
+	temp[0] = r; temp[1] = g; temp[2] = b;
+	return temp;
 }
