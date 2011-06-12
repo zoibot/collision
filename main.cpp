@@ -13,6 +13,7 @@ int main(int argc, char *argv[]) {
 	polygon *temp = NULL;
 	sf::Event e;
 	sf::Clock clock;
+	sf::Clock dt;
 
 	polygon floor;
 	floor.position = vec2(320,480);
@@ -36,6 +37,7 @@ int main(int argc, char *argv[]) {
 			glColor3d(1.0,1.0,1.0);
 			g.end_update();
 		}
+		dt.Reset();
 		while(g.wind.GetEvent(e)) {
 			switch(e.Type) {
 			case sf::Event::MouseButtonReleased:
@@ -85,7 +87,7 @@ int main(int argc, char *argv[]) {
 			}
 		}
 		std::stringstream ss;
-		ss << "energy: " << om.energy();
+        ss << "energy: " << om.energy() << " scale: " << om.impulse_scale;
 		energy.change_text(ss.str());
 		while(clock.GetElapsedTime() < 1.0/60);
 	}
