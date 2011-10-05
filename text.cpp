@@ -3,7 +3,7 @@
 #include <iostream>
 
 text_display::text_display(std::string text, int x, int y) : str(text) {
-	str.SetPosition(x, y);
+	str.SetPosition((float)x, (float)y);
 	hasPhysics = false;
 	hasGraphics = true;
 }
