@@ -1,15 +1,12 @@
 #include "graphics.h"
 
-graphics::graphics() : wind(sf::RenderWindow(sf::VideoMode(640,480), "collide!!!")) {
-	//SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	//screen = SDL_SetVideoMode(640,480,32,SDL_OPENGL);
+graphics::graphics() : wind(sf::VideoMode(640,480), "Physics Demo", sf::Style::Titlebar) {
 	glPointSize(5.0);
 	glViewport(0,0,640,480);
 	wind.PreserveOpenGLStates(true);
 }
 
 graphics::~graphics() {
-	//SDL_Quit();
 }
 
 

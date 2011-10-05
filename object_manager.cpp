@@ -248,7 +248,6 @@ void object_manager::update() {
 			handle_collision((*cur).second, (*cur).first.first, (*cur).first.second);
 	}
 	double energy2 = energy();
-	std::cout << energy1 << ", " << energy2 << std::endl;
 }
 
 double object_manager::energy() {

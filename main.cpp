@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 	floor.points.push_back(vec2(-320,-10));
 	floor.mass = 1000000000;
 
-	text_display energy("energy: ",0,0);
+	//text_display energy("energy: ",0,0);
 	
 	bool paused = false;
 	bool step = false;
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]) {
 		}
 		std::stringstream ss;
 		ss << "energy: " << om.energy();
-		energy.change_text(ss.str());
+		//energy.change_text(ss.str());
 		while(clock.GetElapsedTime() < 1.0/60);
 	}
 	//exit
